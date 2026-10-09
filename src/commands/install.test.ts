@@ -36,13 +36,20 @@ describe("resolveTargetDir", () => {
 describe("runInstallCommand", () => {
   it("rejects unknown categories", async () => {
     await expect(
-      runInstallCommand({ skillsRoot: fixture(), category: ["nope"] }),
+      runInstallCommand({
+        skillsRoot: fixture(),
+        category: ["nope"],
+        offline: true,
+      }),
     ).rejects.toThrow("Unknown category: nope");
   });
 
   it("rejects empty skills root", async () => {
     await expect(
-      runInstallCommand({ skillsRoot: join(tmpdir(), "missing") }),
+      runInstallCommand({
+        skillsRoot: join(tmpdir(), "missing"),
+        offline: true,
+      }),
     ).rejects.toThrow("No skills found");
   });
 });
