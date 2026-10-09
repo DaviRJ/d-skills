@@ -12,11 +12,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  },
   "type": "module",
   "bin": {
     "d-skills": "./dist/cli.js"
