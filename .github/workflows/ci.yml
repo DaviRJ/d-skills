@@ -18,6 +18,8 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+        env:
+          PNPM_CONFIG_DANGEROUSLY_ALLOW_ALL_BUILDS: true
       - run: pnpm validate:skills
       - run: pnpm build
       - run: pnpm test
