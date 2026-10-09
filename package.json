@@ -4,6 +4,14 @@
   "description": "Install agent skills into any project",
   "license": "MIT",
   "author": "Davi Bezerra",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DaviRJ/d-skills.git"
+  },
+  "homepage": "https://github.com/DaviRJ/d-skills#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "bin": {
     "d-skills": "./dist/cli.js"
