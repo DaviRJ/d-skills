@@ -1,14 +1,34 @@
 {
-  "name": "d-skills",
+  "name": "@davi/skills",
   "version": "1.0.0",
-  "description": "",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "validate:skills": "node scripts/validate-skills.mjs"
-  },
-  "keywords": [],
-  "author": "Davi Bezerra",
+  "description": "Install agent skills into any project",
   "license": "MIT",
+  "author": "Davi Bezerra",
+  "type": "module",
+  "bin": {
+    "d-skills": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "tsc --noEmit",
+    "validate:skills": "node scripts/validate-skills.mjs",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "skills",
+    "agents",
+    "cli"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
@@ -16,5 +36,16 @@
       "onFail": "download"
     }
   },
-  "type": "module"
+  "dependencies": {
+    "@clack/prompts": "^1.8.1",
+    "commander": "^15.0.0",
+    "tar": "^7.5.22"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "@types/tar": "^7.0.87",
+    "tsup": "^8.5.1",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
 }
