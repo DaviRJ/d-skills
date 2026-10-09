@@ -1,9 +1,9 @@
-# @davi/skills
+# d-skills
 
 Install agent skills into any project.
 
 ```sh
-npx @davi/skills install
+npx d-skills install
 ```
 
 Run without flags for the interactive flow: pick an install directory, then
@@ -13,14 +13,14 @@ pick categories. Skills land directly under the target directory
 ## Usage
 
 ```sh
-npx @davi/skills install --dir .agents/skills --all
-npx @davi/skills install --category design
-npx @davi/skills install --category design --category integrations
-npx @davi/skills install --category design --offline
-npx @davi/skills install --dir /tmp/demo --dry-run
-npx @davi/skills list
-npx @davi/skills list --categories
-npx @davi/skills list --json
+npx d-skills install --dir .agents/skills --all
+npx d-skills install --category design
+npx d-skills install --category design --category integrations
+npx d-skills install --category design --offline
+npx d-skills install --dir /tmp/demo --dry-run
+npx d-skills list
+npx d-skills list --categories
+npx d-skills list --json
 ```
 
 ## Options
