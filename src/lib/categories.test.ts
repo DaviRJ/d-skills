@@ -2,7 +2,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, it } from "vitest";
-import { discoverCategories } from "./categories.js";
+import { discoverCategories, suggestSimilar } from "./categories.js";
 
 function fixture(): string {
   const root = mkdtempSync(join(tmpdir(), "dskills-"));
@@ -30,5 +30,19 @@ describe("discoverCategories", () => {
 
   it("returns empty array for missing root", () => {
     expect(discoverCategories(join(tmpdir(), "does-not-exist"))).toEqual([]);
+  });
+});
+
+describe("suggestSimilar", () => {
+  const names = ["design", "integrations"];
+
+  it("suggests on typos and partial input", () => {
+    expect(suggestSimilar("desgin", names)).toBe("design");
+    expect(suggestSimilar("desig", names)).toBe("design");
+    expect(suggestSimilar("integration", names)).toBe("integrations");
+  });
+
+  it("returns undefined when nothing is close", () => {
+    expect(suggestSimilar("zzz", names)).toBeUndefined();
   });
 });

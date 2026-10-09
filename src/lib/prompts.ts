@@ -1,17 +1,38 @@
 import * as p from "@clack/prompts";
 import type { Category } from "./categories.js";
 
+export const CUSTOM_DIR = "__custom__";
+
+export const INSTALL_PRESETS = [
+  ".agents/skills",
+  ".claude/skills",
+  ".codex/skills",
+  ".cursor/skills",
+];
+
 export async function askInstallDir(defaultDir: string): Promise<string> {
-  const value = await p.text({
+  const presets = [...new Set([defaultDir, ...INSTALL_PRESETS])];
+  const choice = await p.select({
     message: "Install directory?",
-    placeholder: defaultDir,
-    defaultValue: defaultDir,
+    options: [
+      ...presets.map((dir) => ({ value: dir, label: dir })),
+      { value: CUSTOM_DIR, label: "Custom path..." },
+    ],
   });
-  if (p.isCancel(value)) {
+  if (p.isCancel(choice)) {
     p.cancel("Cancelled.");
     process.exit(0);
   }
-  const trimmed = String(value).trim();
+  if (choice !== CUSTOM_DIR) return choice as string;
+  const custom = await p.text({
+    message: "Custom directory?",
+    placeholder: defaultDir,
+  });
+  if (p.isCancel(custom)) {
+    p.cancel("Cancelled.");
+    process.exit(0);
+  }
+  const trimmed = String(custom).trim();
   return trimmed === "" ? defaultDir : trimmed;
 }
 

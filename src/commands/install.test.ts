@@ -52,4 +52,14 @@ describe("runInstallCommand", () => {
       }),
     ).rejects.toThrow("No skills found");
   });
+
+  it("suggests similar categories", async () => {
+    await expect(
+      runInstallCommand({
+        skillsRoot: fixture(),
+        category: ["cat-b"],
+        offline: true,
+      }),
+    ).rejects.toThrow('Did you mean: "cat-b" → "cat-a"?');
+  });
 });

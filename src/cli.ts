@@ -1,20 +1,28 @@
 import { Command } from "commander";
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { runInstallCommand } from "./commands/install.js";
 import { runList } from "./commands/list.js";
 
-const skillsRoot = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "skills",
-);
+const rootDir = join(dirname(fileURLToPath(import.meta.url)), "..");
+const skillsRoot = join(rootDir, "skills");
+
+function packageVersion(): string {
+  try {
+    const pkg = JSON.parse(readFileSync(join(rootDir, "package.json"), "utf8"));
+    return typeof pkg.version === "string" ? pkg.version : "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
+}
+
 const program = new Command();
 
 program
   .name("d-skills")
   .description("Install agent skills into any project")
-  .version("1.0.0");
+  .version(packageVersion());
 
 program
   .command("install")

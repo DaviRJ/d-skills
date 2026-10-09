@@ -47,9 +47,54 @@ export function discoverCategories(skillsRoot: string): Category[] {
       } catch {
         continue;
       }
-      skills.push({ name: skillName, description, category: categoryName, dir: skillDir });
+      skills.push({
+        name: skillName,
+        description,
+        category: categoryName,
+        dir: skillDir,
+      });
     }
     categories.push({ name: categoryName, dir: categoryDir, skills });
   }
   return categories;
+}
+
+function levenshtein(a: string, b: string): number {
+  const grid = Array.from({ length: a.length + 1 }, (_, i) => [
+    i,
+    ...Array(b.length).fill(0),
+  ]);
+  for (let j = 1; j <= b.length; j++) grid[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      grid[i][j] = Math.min(
+        grid[i - 1][j] + 1,
+        grid[i][j - 1] + 1,
+        grid[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1),
+      );
+    }
+  }
+  return grid[a.length][b.length];
+}
+
+export function suggestSimilar(
+  input: string,
+  names: string[],
+): string | undefined {
+  const lower = input.toLowerCase();
+  const partial = names.find(
+    (name) =>
+      name.toLowerCase().includes(lower) || lower.includes(name.toLowerCase()),
+  );
+  if (partial) return partial;
+  let best: string | undefined;
+  let bestDist = 3;
+  for (const name of names) {
+    const dist = levenshtein(lower, name.toLowerCase());
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = name;
+    }
+  }
+  return best;
 }

@@ -1,7 +1,12 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
-import { discoverCategories, type Category } from "../lib/categories.js";
+import * as p from "@clack/prompts";
+import {
+  discoverCategories,
+  suggestSimilar,
+  type Category,
+} from "../lib/categories.js";
 import {
   downloadTarball,
   extractSkills,
@@ -38,11 +43,16 @@ function isInteractive(): boolean {
 
 function assertKnownCategories(requested: string[], names: string[]): void {
   const unknown = requested.filter((c) => !names.includes(c));
-  if (unknown.length > 0) {
-    throw new Error(
-      `Unknown categor${unknown.length === 1 ? "y" : "ies"}: ${unknown.join(", ")}. Available: ${names.join(", ")}`,
-    );
-  }
+  if (unknown.length === 0) return;
+  const hints = unknown.flatMap((u) => {
+    const match = suggestSimilar(u, names);
+    return match ? [`"${u}" → "${match}"`] : [];
+  });
+  throw new Error(
+    `Unknown categor${unknown.length === 1 ? "y" : "ies"}: ${unknown.join(", ")}.` +
+      `${hints.length > 0 ? ` Did you mean: ${hints.join(", ")}?` : ""}` +
+      ` Available: ${names.join(", ")}`,
+  );
 }
 
 export async function runInstallCommand(
@@ -78,9 +88,11 @@ export async function runInstallCommand(
       categories.map((c) => c.name),
     );
 
+    const interactive = isInteractive();
     let dir = options.dir;
     let selection = requested;
-    if (isInteractive()) {
+    if (interactive) {
+      p.intro("d-skills");
       if (dir === undefined) dir = await askInstallDir(DEFAULT_DIR);
       if (!options.all && selection.length === 0)
         selection = await askScope(categories);
@@ -92,6 +104,7 @@ export async function runInstallCommand(
       console.log(`Would install ${plan.length} skills to ${targetDir}:`);
       for (const item of plan)
         console.log(`  ${item.skill} (${item.category})`);
+      if (interactive) p.outro("Dry run — nothing was copied.");
       return;
     }
 
@@ -101,9 +114,14 @@ export async function runInstallCommand(
       counts[result.status] += 1;
       console.log(`${result.status} ${result.skill} (${result.category})`);
     }
-    console.log(
-      `Done: ${counts.installed} installed, ${counts.overwritten} overwritten, ${counts.skipped} skipped → ${targetDir}`,
-    );
+    const summary =
+      `Done: ${counts.installed} installed, ${counts.overwritten} overwritten, ` +
+      `${counts.skipped} skipped → ${targetDir}`;
+    if (interactive) {
+      p.outro(`${summary}\nSkills land directly under the target directory.`);
+    } else {
+      console.log(summary);
+    }
   } finally {
     cleanup?.();
   }
