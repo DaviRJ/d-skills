@@ -19,11 +19,11 @@ program
 program
   .command("install")
   .description("Install skills into a local directory")
-  .option("-d, --dir <path>", "install directory", ".agents/skills")
+  .option("-d, --dir <path>", "install directory")
   .option(
     "-c, --category <name>",
     "install single category (repeatable)",
-    (value, acc: string[]) => [...acc],
+    (value, acc: string[]) => [...acc, value],
     [] as string[],
   )
   .option("-a, --all", "install all categories")
@@ -31,7 +31,12 @@ program
   .option("--offline", "use bundled skills instead of GitHub")
   .option("--dry-run", "print plan without copying")
   .action(async (opts) => {
-    await runInstallCommand({ ...opts, skillsRoot });
+    try {
+      await runInstallCommand({ ...opts, skillsRoot });
+    } catch (error) {
+      console.error(`error: ${(error as Error).message}`);
+      process.exitCode = 1;
+    }
   });
 
 program
